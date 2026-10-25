@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stok Bahan Ajar - UT</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app" class="page-shell">
+        <nav class="navbar">
+            <a class="brand" href="index.html">
+                UT
+                <span>BAHAN AJAR</span>
+            </a>
+
+            <div class="nav-links">
+                <a href="index.html">Beranda</a>
+                <a class="active" href="stok.html">Stok Bahan Ajar</a>
+                <a href="tracking.html">Tracking DO</a>
+            </div>
+        </nav>
+
+        <main class="container">
+            <div class="page-heading">
+                <div>
+                    <p class="eyebrow">INVENTARIS</p>
+                    <h1>Stok Bahan Ajar</h1>
+                    <p class="muted">
+                        Kelola dan pantau ketersediaan bahan ajar di setiap UT daerah.
+                    </p>
+                </div>
+
+                <button class="button primary" @click="openAdd">
+                    + Tambah Bahan Ajar
+                </button>
+            </div>
+
+            <section class="stats">
+                <div>
+                    <p>Total judul</p>
+                    <strong>{{ stok.length }}</strong>
+                </div>
+                <div>
+                    <p>Stok aman</p>
+                    <strong>{{ countStatus('aman') }}</strong>
+                </div>
+                <div>
+                    <p>Perlu reorder</p>
+                    <strong>{{ countStatus('menipis') }}</strong>
+                </div>
+                <div>
+                    <p>Stok kosong</p>
+                    <strong>{{ countStatus('kosong') }}</strong>
+                </div>
+            </section>
+
+            <section class="panel filters">
+                <div class="panel-title">
+                    <div>
+                        <h2>Daftar persediaan</h2>
+                        <span class="muted">
+                            {{ filteredStok.length }} dari {{ stok.length }} data
+                        </span>
+                    </div>
+
+                    <button class="link-button" @click="resetFilters">
+                        Reset filter
+                    </button>
+                </div>
+
+                <div class="filter-grid">
+                    <label>
+                        UT-Daerah
+                        <select v-model="filters.upbjj">
+                            <option value="">Semua UT-Daerah</option>
+                            <option
+                                v-for="item in upbjjList"
+                                :value="item"
+                            >
+                                {{ item }}
+                            </option>
+                        </select>
+                    </label>
+
+                    <label v-show="filters.upbjj">
+                        Kategori
+                        <select v-model="filters.kategori">
+                            <option value="">Semua kategori</option>
+                            <option
+                                v-for="item in kategoriOptions"
+                                :value="item"
+                            >
+                                {{ item }}
+                            </option>
+                        </select>
+                    </label>
+
+                    <label>
+                        Urutkan
+                        <select v-model="filters.sort">
+                            <option value="judul">Judul (A-Z)</option>
+                            <option value="qty">Stok terendah</option>
+                            <option value="harga">Harga terendah</option>
+                        </select>
+                    </label>
+
+                    <label class="check-label">
+                        <input type="checkbox" v-model="filters.reorder">
+                        Hanya perlu reorder
+                    </label>
+                </div>
+            </section>
+
+            <section class="panel table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Kode / Mata Kuliah</th>
+                            <th>Kategori</th>
+                            <th>UT-Daerah</th>
+                            <th>Lokasi Rak</th>
+                            <th>Stok</th>
+                            <th>Safety</th>
+                            <th>Status</th>
+                            <th>Catatan</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr
+                            v-for="item in filteredStok"
+                            :key="item.kode"
+                        >
+                            <td>
+                                <strong>{{ item.kode }}</strong>
+                                <br>
+                                <span>{{ item.judul }}</span>
+                            </td>
+                            <td>
+                                <span class="tag">{{ item.kategori }}</span>
+                            </td>
+                            <td>{{ item.upbjj }}</td>
+                            <td>{{ item.lokasiRak }}</td>
+                            <td><strong>{{ item.qty }}</strong></td>
+                            <td>{{ item.safety }}</td>
+                            <td>
+                                <span
+                                    v-if="item.qty === 0"
+                                    class="status empty-status"
+                                >
+                                    <b>×</b>
+                                    Kosong
+                                </span>
+                                <span
+                                    v-else-if="item.qty < item.safety"
+                                    class="status low-status"
+                                >
+                                    <b>!</b>
+                                    Menipis
+                                </span>
+                                <span
+                                    v-else
+                                    class="status safe-status"
+                                >
+                                    <b>✓</b>
+                                    Aman
+                                </span>
+                            </td>
+                            <td>
+                                <span v-html="item.catatanHTML"></span>
+                            </td>
+                            <td>
+                                <button
+                                    class="icon-button"
+                                    title="Edit data"
+                                    @click="openEdit(item)"
+                                >
+                                    Edit
+                                </button>
+                            </td>
+                        </tr>
+
+                        <tr v-if="!filteredStok.length">
+                            <td colspan="9" class="empty">
+                                Tidak ada data yang cocok dengan filter.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <p class="hint">
+                * Stok di bawah safety stock akan masuk daftar rekomendasi reorder.
+            </p>
+        </main>
+
+        <div class="modal-backdrop" v-if="modalOpen">
+            <form class="modal" @submit.prevent="saveItem">
+                <button
+                    type="button"
+                    class="modal-close"
+                    @click="closeModal"
+                >
+                    ×
+                </button>
+
+                <p class="eyebrow">
+                    {{ editing ? 'EDIT DATA' : 'DATA BARU' }}
+                </p>
+                <h2>
+                    {{ editing ? 'Edit stok bahan ajar' : 'Tambah bahan ajar' }}
+                </h2>
+
+                <div class="form-grid">
+                    <label>
+                        Kode mata kuliah
+                        <input v-model.trim="form.kode" required maxlength="20">
+                    </label>
+                    <label>
+                        Nama mata kuliah
+                        <input v-model.trim="form.judul" required>
+                    </label>
+                    <label>
+                        Kategori
+                        <select v-model="form.kategori" required>
+                            <option disabled value="">Pilih kategori</option>
+                            <option v-for="item in kategoriList">
+                                {{ item }}
+                            </option>
+                        </select>
+                    </label>
+                    <label>
+                        UT-Daerah
+                        <select v-model="form.upbjj" required>
+                            <option disabled value="">Pilih daerah</option>
+                            <option v-for="item in upbjjList">
+                                {{ item }}
+                            </option>
+                        </select>
+                    </label>
+                    <label>
+                        Lokasi rak
+                        <input v-model.trim="form.lokasiRak" required>
+                    </label>
+                    <label>
+                        Harga (Rp)
+                        <input type="number" min="0" v-model.number="form.harga" required>
+                    </label>
+                    <label>
+                        Jumlah stok
+                        <input type="number" min="0" v-model.number="form.qty" required>
+                    </label>
+                    <label>
+                        Safety stock
+                        <input type="number" min="0" v-model.number="form.safety" required>
+                    </label>
+                    <label class="full">
+                        Catatan
+                        <input v-model="form.catatanHTML" placeholder="Contoh: Edisi terbaru">
+                    </label>
+                </div>
+
+                <p class="form-error" v-if="formError">
+                    {{ formError }}
+                </p>
+
+                <button class="button primary full-button" type="submit">
+                    Simpan data
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="js/dataBahanAjar.js"></script>
+    <script src="js/stok-app.js"></script>
+</body>
+</html>

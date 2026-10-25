@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UT Bahan Ajar</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app" class="landing">
+        <nav class="navbar">
+            <a class="brand" href="index.html">
+                UT
+                <span>BAHAN AJAR</span>
+            </a>
+
+            <div class="nav-links">
+                <a class="active" href="index.html">Beranda</a>
+                <a href="stok.html">Stok Bahan Ajar</a>
+                <a href="tracking.html">Tracking DO</a>
+            </div>
+        </nav>
+
+        <main class="simple-home">
+            <p class="eyebrow">UNIVERSITAS TERBUKA</p>
+            <h1>Aplikasi Bahan Ajar</h1>
+            <p>Silakan pilih halaman yang ingin dibuka.</p>
+
+            <div class="home-links">
+                <a class="button primary" href="stok.html">
+                    Halaman Stok Bahan Ajar
+                </a>
+                <a class="button secondary" href="tracking.html">
+                    Halaman Tracking DO
+                </a>
+            </div>
+        </main>
+
+        <footer>
+            Portal Bahan Ajar · Universitas Terbuka
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script>
+        new Vue({
+            el: "#app"
+        });
+    </script>
+</body>
+</html>
