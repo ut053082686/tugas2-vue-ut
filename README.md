@@ -18,6 +18,20 @@ Aplikasi ini merupakan website sederhana untuk mengelola stok bahan ajar dan mel
 
 Aplikasi dibuat menggunakan Vue.js. Data yang digunakan masih berupa data dummy dari file JavaScript dan belum menggunakan database.
 
+## A. Penjelasan Program
+
+Program ini merupakan aplikasi website sederhana untuk membantu mengelola data bahan ajar Universitas Terbuka. Aplikasi dibuat menggunakan Vue.js dengan data dummy yang disimpan pada file `js/dataBahanAjar.js`.
+
+Saat aplikasi dibuka, pengguna akan melihat halaman awal pada `index.html`. Halaman tersebut menyediakan navigasi menuju halaman Stok Bahan Ajar dan halaman Tracking Delivery Order.
+
+Pada halaman Stok Bahan Ajar, data dari array `stok` ditampilkan dalam bentuk tabel. Pengguna dapat memilih UT-Daerah, memilih kategori, mengurutkan data, dan menampilkan stok yang perlu di-reorder. Status stok ditentukan dari perbandingan jumlah stok dengan safety stock. Pengguna juga dapat menambah data bahan ajar baru atau mengedit data yang sudah ada melalui formulir.
+
+Pada halaman Tracking Delivery Order, data tracking ditampilkan berdasarkan nomor DO. Pengguna dapat mencari data berdasarkan nomor DO atau nama penerima, lalu melihat informasi pengiriman dan riwayat perjalanan paket. Pengguna juga dapat menambahkan Delivery Order baru. Nomor DO dibuat otomatis berdasarkan tahun berjalan dan nomor urut.
+
+Vue.js digunakan untuk menghubungkan data dengan tampilan halaman. Directive seperti `v-for`, `v-if`, `v-else-if`, `v-else`, `v-show`, `v-model`, dan `v-html` digunakan sesuai kebutuhan. Computed property digunakan untuk filter, sorting, pencarian, detail paket, dan pembuatan nomor DO. Methods digunakan untuk menjalankan aksi seperti menambah, mengedit, dan memformat data. Watcher digunakan untuk memantau perubahan filter, pencarian, dan pilihan paket.
+
+Data pada aplikasi ini hanya tersimpan sementara di memori browser. Jika halaman di-refresh, data akan kembali ke data awal karena aplikasi belum menggunakan database atau `localStorage`.
+
 ## Fitur Aplikasi
 
 ### Halaman Beranda
